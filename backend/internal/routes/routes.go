@@ -10,7 +10,7 @@ import (
 func NewRouter(pinger handlers.Pinger) *gin.Engine {
 	router := gin.New()
 	router.Use(gin.LoggerWithFormatter(func(params gin.LogFormatterParams) string {
-		return fmt.Sprintf("%s %d %s\n", params.Method, params.StatusCode, params.Latency)
+		return fmt.Sprintf("%s %s %d %s\n", params.Method, params.Path, params.StatusCode, params.Latency)
 	}))
 	router.Use(gin.Recovery())
 
