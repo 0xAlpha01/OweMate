@@ -39,10 +39,15 @@ func (s *DebtService) Create(ctx context.Context, request models.CreateDebtReque
 	}
 
 	now := s.clock().UTC()
+	var dueDate *time.Time
+	if request.DueDate != nil {
+		parsedDueDate := request.DueDate.UTC()
+		dueDate = &parsedDueDate
+	}
 	debt := &models.Debt{
 		ID: bson.NewObjectID(), OwnerID: s.ownerID, PersonName: strings.TrimSpace(request.PersonName),
 		Direction: request.Direction, Description: strings.TrimSpace(request.Description),
-		OriginalAmount: request.OriginalAmount, DueDate: request.DueDate,
+		OriginalAmount: request.OriginalAmount, DueDate: dueDate,
 		Notes: strings.TrimSpace(request.Notes), CreatedAt: now, UpdatedAt: now,
 	}
 	if err := debt.Recalculate(now); err != nil {
