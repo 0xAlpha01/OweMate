@@ -28,9 +28,17 @@ export function getFinanceSummary(debts: Debt[], repayments: Repayment[]) {
   const active = getOutstandingDebts(debts);
   const currentMonth = new Date().toISOString().slice(0, 7);
   return {
-    owedToMe: active.filter((debt) => debt.direction === "owed_to_me").reduce((total, debt) => total + debt.amount, 0),
-    iOwe: active.filter((debt) => debt.direction === "i_owe").reduce((total, debt) => total + debt.amount, 0),
-    overdue: active.filter((debt) => getDebtStatus(debt) === "overdue").reduce((total, debt) => total + debt.amount, 0),
-    repaidThisMonth: repayments.filter((repayment) => repayment.date.slice(0, 7) === currentMonth).reduce((total, repayment) => total + repayment.amount, 0),
+    owedToMe: active
+      .filter((debt) => debt.direction === "owed_to_me")
+      .reduce((total, debt) => total + debt.amount, 0),
+    iOwe: active
+      .filter((debt) => debt.direction === "i_owe")
+      .reduce((total, debt) => total + debt.amount, 0),
+    overdue: active
+      .filter((debt) => getDebtStatus(debt) === "overdue")
+      .reduce((total, debt) => total + debt.amount, 0),
+    repaidThisMonth: repayments
+      .filter((repayment) => repayment.date.slice(0, 7) === currentMonth)
+      .reduce((total, repayment) => total + repayment.amount, 0),
   };
 }

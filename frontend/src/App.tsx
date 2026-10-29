@@ -19,6 +19,9 @@ import { Sidebar } from "./components/Sidebar";
 import { mockDebts, mockRepayments } from "./data/mockData";
 import { getDebtStatus, getFinanceSummary, getOutstandingDebts, sortByDueDate } from "./lib/finance";
 import type { Debt, DebtDraft, Repayment, ViewKey } from "./types";
+import "./dashboard.css";
+
+const todayLabel = new Intl.DateTimeFormat("en-NG", { weekday: "long", month: "long", day: "numeric", year: "numeric" }).format(new Date()).toUpperCase();
 
 const pageCopy: Record<ViewKey, { title: string; subtitle: string }> = {
   Overview: { title: "Overview", subtitle: "A clear picture of your money, all in one place." },
@@ -116,7 +119,7 @@ function App() {
 
         <main className="main-content">
           <div className="page-heading">
-            <div><p className="eyebrow">{new Intl.DateTimeFormat("en-NG", { weekday: "long", month: "long", day: "numeric", year: "numeric" }).format(new Date()).toUpperCase()}</p>
+            <div><p className="eyebrow">{todayLabel}</p>
               <h1>{activeView === "Overview" ? "Good morning, Ada" : copy.title}</h1>
               <p className="page-subtitle">{activeView === "Overview" ? "Here's what's happening with your money today." : copy.subtitle}</p></div>
             <button className="primary-button" onClick={() => setIsAddModalOpen(true)}><Plus size={18} /> Add debt</button>
