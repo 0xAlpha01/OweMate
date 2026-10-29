@@ -69,3 +69,18 @@ func TestDueDateIsNotOverdueUntilFollowingUTCDate(t *testing.T) {
 		t.Fatal("due date today should not be overdue")
 	}
 }
+
+func TestDateParsesDateOnlyAndPatchAllowsMissingDueDate(t *testing.T) {
+	var dueDate Date
+	if err := json.Unmarshal([]byte(`"2026-10-29"`), &dueDate); err != nil {
+		t.Fatalf("date-only Unmarshal() error = %v", err)
+	}
+	if got := dueDate.UTC().Format(time.DateOnly); got != "2026-10-29" {
+		t.Errorf("parsed date = %q, want 2026-10-29", got)
+	}
+
+	patch := (UpdateDebtRequest{}).Patch()
+	if patch.DueDate != nil {
+		t.Errorf("omitted due date = %v, want nil", patch.DueDate)
+	}
+}

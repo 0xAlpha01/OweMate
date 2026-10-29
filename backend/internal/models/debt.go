@@ -222,9 +222,13 @@ type UpdateDebtRequest struct {
 }
 
 func (r UpdateDebtRequest) Patch() DebtPatch {
+	var dueDate *time.Time
+	if r.DueDate != nil {
+		dueDate = r.DueDate.TimePointer()
+	}
 	return DebtPatch{
 		PersonName: r.PersonName, Direction: r.Direction, Description: r.Description,
-		OriginalAmount: r.OriginalAmount, DueDate: r.DueDate.TimePointer(), Notes: r.Notes,
+		OriginalAmount: r.OriginalAmount, DueDate: dueDate, Notes: r.Notes,
 	}
 }
 
