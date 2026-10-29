@@ -12,7 +12,7 @@ function App() {
         TypeScript, Vite, and Tailwind CSS.
       </p>
     </main>
-  )
+  );
 }
 
-export default App
+export default App;
