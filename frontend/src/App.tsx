@@ -377,15 +377,6 @@ function App() {
               </p>
             </div>
           )}
-          {query &&
-            matchingDebts.length === 0 &&
-            matchingRepayments.length === 0 && (
-              <div className="empty-search">
-                <Search size={22} />
-                <strong>No matches found</strong>
-                <span>Try another name or description.</span>
-              </div>
-            )}
         </main>
       </div>
       {isAddModalOpen && (

@@ -904,21 +904,6 @@
   gap: 6px;
   padding-top: 10px;
 }
-.empty-search {
-  display: grid;
-  justify-items: center;
-  gap: 8px;
-  padding: 70px 20px;
-  color: #879490;
-  font-size: 11px;
-}
-.empty-search svg {
-  color: #8bb9b0;
-}
-.empty-search strong {
-  color: #40514d;
-  font-size: 13px;
-}
 .modal-backdrop {
   position: fixed;
   inset: 0;
