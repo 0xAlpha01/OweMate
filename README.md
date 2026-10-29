@@ -21,18 +21,19 @@ Vite serves the frontend at `http://localhost:5173`. The frontend example enviro
 
 ## Backend
 
-```cmd
-cd backend
+```powershell
+Set-Location .\backend
 go mod download
-set MONGODB_URI=mongodb://localhost:27017/owemate
-set PORT=8080
+$env:MONGODB_URI = "mongodb://localhost:27017"
+$env:MONGODB_DATABASE = "owemate"
+$env:PORT = "8080"
 go run ./cmd/server
 ```
 
-The API listens at `http://localhost:8080`; verify it with `http://localhost:8080/health`. MongoDB must be reachable at `MONGODB_URI` when the server starts. `PORT` is optional and defaults to `8080`.
+The API listens at `http://localhost:8080`. `GET /health` reports whether the API process is running; `GET /ready` reports MongoDB connectivity. The server can start while MongoDB is unavailable, but readiness will return `503` until it can connect. `PORT` defaults to `8080`; `MONGODB_DATABASE` defaults to `owemate`.
 
 ## Environment configuration
 
-`frontend/.env.example` and `backend/.env.example` contain placeholder configuration only. Vite loads frontend `.env` files automatically. The Go server reads `MONGODB_URI` and `PORT` from the process environment; its example file documents the values but is not loaded automatically. In Windows CMD, use `set NAME=value` in the same terminal before running the server.
+`frontend/.env.example` and `backend/.env.example` contain example configuration only. Vite loads frontend `.env` files automatically. The Go server reads `MONGODB_URI`, `MONGODB_DATABASE`, and `PORT` from the process environment; its example file documents the values but is not loaded automatically. In PowerShell, set them with `$env:NAME = "value"` in the same terminal before running the server.
 
 Never commit real credentials or API keys. No OpenAI or WhatsApp credentials are needed for this starter.
