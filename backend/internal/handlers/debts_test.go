@@ -166,3 +166,18 @@ func TestNotFoundAndDatabaseErrorsAreSafe(t *testing.T) {
 		})
 	}
 }
+
+func TestListRejectsInvalidFiltersAndPagination(t *testing.T) {
+	for _, query := range []string{
+		"?direction=unknown",
+		"?status=unknown",
+		"?page=0",
+		"?limit=-1",
+	} {
+		recorder := httptest.NewRecorder()
+		newDebtRouter(&fakeDebtService{}).ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/api/v1/debts"+query, nil))
+		if recorder.Code != http.StatusBadRequest {
+			t.Errorf("GET %s status = %d, want 400", query, recorder.Code)
+		}
+	}
+}
