@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -109,6 +109,7 @@ function App() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [toast, setToast] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const summary = getFinanceSummary(debts, repayments);
   const activeDebts = getOutstandingDebts(debts);
   const query = search.trim().toLocaleLowerCase();
@@ -139,6 +140,18 @@ function App() {
     (debt) => getDebtStatus(debt) !== "paid",
   );
   const copy = pageCopy[activeView];
+
+  useEffect(() => {
+    function handleSearchShortcut(event: KeyboardEvent) {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    }
+
+    window.addEventListener("keydown", handleSearchShortcut);
+    return () => window.removeEventListener("keydown", handleSearchShortcut);
+  }, []);
 
   function showToast(message: string) {
     setToast(message);
@@ -214,6 +227,7 @@ function App() {
             <label className="search-box">
               <Search size={17} />
               <input
+                ref={searchInputRef}
                 aria-label="Search debts and repayments"
                 placeholder="Search anything..."
                 value={search}
