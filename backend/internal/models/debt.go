@@ -31,6 +31,26 @@ const (
 // Money stores integer kobo. Its JSON representation is a decimal naira number.
 type Money int64
 
+type Date struct {
+	time.Time
+}
+
+func (d *Date) UnmarshalJSON(data []byte) error {
+	var value string
+	if err := json.Unmarshal(data, &value); err != nil {
+		return errors.New("due_date must be an ISO date or RFC3339 timestamp")
+	}
+	parsed, err := time.Parse(time.DateOnly, value)
+	if err != nil {
+		parsed, err = time.Parse(time.RFC3339, value)
+	}
+	if err != nil {
+		return errors.New("due_date must be an ISO date or RFC3339 timestamp")
+	}
+	d.Time = parsed.UTC()
+	return nil
+}
+
 func (m Money) MarshalJSON() ([]byte, error) {
 	value := int64(m)
 	negative := value < 0
@@ -188,7 +208,7 @@ type CreateDebtRequest struct {
 	Direction      DebtDirection `json:"direction"`
 	Description    string        `json:"description"`
 	OriginalAmount Money         `json:"original_amount"`
-	DueDate        *time.Time    `json:"due_date"`
+	DueDate        *Date         `json:"due_date"`
 	Notes          string        `json:"notes"`
 }
 
@@ -197,13 +217,17 @@ type UpdateDebtRequest struct {
 	Direction      *DebtDirection `json:"direction"`
 	Description    *string        `json:"description"`
 	OriginalAmount *Money         `json:"original_amount"`
-	DueDate        *time.Time     `json:"due_date"`
+	DueDate        *Date          `json:"due_date"`
 	Notes          *string        `json:"notes"`
 }
 
 func (r UpdateDebtRequest) Patch() DebtPatch {
 	return DebtPatch{
 		PersonName: r.PersonName, Direction: r.Direction, Description: r.Description,
-		OriginalAmount: r.OriginalAmount, DueDate: r.DueDate, Notes: r.Notes,
+		OriginalAmount: r.OriginalAmount, DueDate: r.DueDate.TimePointer(), Notes: r.Notes,
 	}
+}
+
+func (d Date) TimePointer() *time.Time {
+	return &d.Time
 }
