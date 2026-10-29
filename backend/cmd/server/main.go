@@ -12,7 +12,10 @@ import (
 
 	"github.com/0xAlpha01/OweMate/backend/internal/config"
 	"github.com/0xAlpha01/OweMate/backend/internal/database"
+	"github.com/0xAlpha01/OweMate/backend/internal/handlers"
+	"github.com/0xAlpha01/OweMate/backend/internal/repositories"
 	"github.com/0xAlpha01/OweMate/backend/internal/routes"
+	"github.com/0xAlpha01/OweMate/backend/internal/services"
 )
 
 func main() {
@@ -37,11 +40,18 @@ func run() error {
 	if err := client.Ping(startupCtx); err != nil {
 		log.Printf("MongoDB startup check failed; API will start with readiness unavailable")
 	}
+	debtRepository := repositories.NewMongoDebtRepository(client.Database())
+	if err := debtRepository.EnsureIndexes(startupCtx); err != nil {
+		log.Printf("MongoDB index setup failed; database-backed requests may be unavailable")
+	}
 	cancelStartup()
+
+	router := routes.NewRouter(client)
+	routes.RegisterDebtRoutes(router, handlers.NewDebtHandler(services.NewDebtService(debtRepository)), cfg.DevelopmentOwnerID)
 
 	server := &http.Server{
 		Addr:              ":" + cfg.Port,
-		Handler:           routes.NewRouter(client),
+		Handler:           router,
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       15 * time.Second,
 		WriteTimeout:      15 * time.Second,

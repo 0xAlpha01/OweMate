@@ -16,15 +16,14 @@ var ErrValidation = errors.New("invalid debt")
 
 type DebtService struct {
 	repository repositories.DebtRepository
-	ownerID    string
 	clock      func() time.Time
 }
 
-func NewDebtService(repository repositories.DebtRepository, ownerID string) *DebtService {
-	return &DebtService{repository: repository, ownerID: ownerID, clock: time.Now}
+func NewDebtService(repository repositories.DebtRepository) *DebtService {
+	return &DebtService{repository: repository, clock: time.Now}
 }
 
-func (s *DebtService) Create(ctx context.Context, request models.CreateDebtRequest) (*models.Debt, error) {
+func (s *DebtService) Create(ctx context.Context, ownerID string, request models.CreateDebtRequest) (*models.Debt, error) {
 	if err := validatePersonName(request.PersonName); err != nil {
 		return nil, err
 	}
@@ -45,7 +44,7 @@ func (s *DebtService) Create(ctx context.Context, request models.CreateDebtReque
 		dueDate = &parsedDueDate
 	}
 	debt := &models.Debt{
-		ID: bson.NewObjectID(), OwnerID: s.ownerID, PersonName: strings.TrimSpace(request.PersonName),
+		ID: bson.NewObjectID(), OwnerID: ownerID, PersonName: strings.TrimSpace(request.PersonName),
 		Direction: request.Direction, Description: strings.TrimSpace(request.Description),
 		OriginalAmount: request.OriginalAmount, DueDate: dueDate,
 		Notes: strings.TrimSpace(request.Notes), CreatedAt: now, UpdatedAt: now,
@@ -59,16 +58,16 @@ func (s *DebtService) Create(ctx context.Context, request models.CreateDebtReque
 	return debt, nil
 }
 
-func (s *DebtService) List(ctx context.Context, filter models.DebtFilter) (models.DebtPage, error) {
-	return s.repository.List(ctx, s.ownerID, filter, s.clock().UTC())
+func (s *DebtService) List(ctx context.Context, ownerID string, filter models.DebtFilter) (models.DebtPage, error) {
+	return s.repository.List(ctx, ownerID, filter, s.clock().UTC())
 }
 
-func (s *DebtService) Get(ctx context.Context, id bson.ObjectID) (*models.Debt, error) {
-	return s.repository.Find(ctx, s.ownerID, id)
+func (s *DebtService) Get(ctx context.Context, ownerID string, id bson.ObjectID) (*models.Debt, error) {
+	return s.repository.Find(ctx, ownerID, id)
 }
 
-func (s *DebtService) Update(ctx context.Context, id bson.ObjectID, patch models.DebtPatch) (*models.Debt, error) {
-	debt, err := s.repository.Find(ctx, s.ownerID, id)
+func (s *DebtService) Update(ctx context.Context, ownerID string, id bson.ObjectID, patch models.DebtPatch) (*models.Debt, error) {
+	debt, err := s.repository.Find(ctx, ownerID, id)
 	if err != nil {
 		return nil, err
 	}
@@ -109,11 +108,11 @@ func (s *DebtService) Update(ctx context.Context, id bson.ObjectID, patch models
 	if err := debt.Recalculate(debt.UpdatedAt); err != nil {
 		return nil, validationError(err.Error())
 	}
-	return s.repository.Update(ctx, s.ownerID, id, debt)
+	return s.repository.Update(ctx, ownerID, id, debt)
 }
 
-func (s *DebtService) Delete(ctx context.Context, id bson.ObjectID) error {
-	return s.repository.Delete(ctx, s.ownerID, id)
+func (s *DebtService) Delete(ctx context.Context, ownerID string, id bson.ObjectID) error {
+	return s.repository.Delete(ctx, ownerID, id)
 }
 
 func validatePersonName(value string) error {

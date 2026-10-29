@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/0xAlpha01/OweMate/backend/internal/handlers"
+	"github.com/0xAlpha01/OweMate/backend/internal/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,4 +18,14 @@ func NewRouter(pinger handlers.Pinger) *gin.Engine {
 	router.GET("/health", handlers.Health)
 	router.GET("/ready", handlers.Ready(pinger))
 	return router
+}
+
+func RegisterDebtRoutes(router *gin.Engine, debtHandler *handlers.DebtHandler, developmentOwnerID string) {
+	debts := router.Group("/api/v1/debts", middleware.DevelopmentOwner(developmentOwnerID))
+	debts.POST("", debtHandler.Create)
+	debts.GET("", debtHandler.List)
+	debts.GET("/", debtHandler.List)
+	debts.GET("/:id", debtHandler.Get)
+	debts.PATCH("/:id", debtHandler.Update)
+	debts.DELETE("/:id", debtHandler.Delete)
 }

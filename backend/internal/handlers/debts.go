@@ -18,11 +18,11 @@ import (
 )
 
 type DebtManager interface {
-	Create(context.Context, models.CreateDebtRequest) (*models.Debt, error)
-	List(context.Context, models.DebtFilter) (models.DebtPage, error)
-	Get(context.Context, bson.ObjectID) (*models.Debt, error)
-	Update(context.Context, bson.ObjectID, models.DebtPatch) (*models.Debt, error)
-	Delete(context.Context, bson.ObjectID) error
+	Create(context.Context, string, models.CreateDebtRequest) (*models.Debt, error)
+	List(context.Context, string, models.DebtFilter) (models.DebtPage, error)
+	Get(context.Context, string, bson.ObjectID) (*models.Debt, error)
+	Update(context.Context, string, bson.ObjectID, models.DebtPatch) (*models.Debt, error)
+	Delete(context.Context, string, bson.ObjectID) error
 }
 
 type DebtHandler struct {
@@ -61,13 +61,9 @@ func (h *DebtHandler) Create(c *gin.Context) {
 		writeError(c, http.StatusInternalServerError, "internal_error", "request owner is unavailable")
 		return
 	}
-	created, err := h.service.Create(c.Request.Context(), request)
+	created, err := h.service.Create(c.Request.Context(), ownerID, request)
 	if err != nil {	
 		writeServiceError(c, err)
-		return
-	}
-	if created.OwnerID != ownerID {
-		writeError(c, http.StatusInternalServerError, "internal_error", "debt could not be created")
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{"data": created})
@@ -79,11 +75,12 @@ func (h *DebtHandler) List(c *gin.Context) {
 		writeError(c, http.StatusBadRequest, "invalid_request", err.Error())
 		return
 	}
-	if _, ok := middleware.OwnerID(c); !ok {
+	ownerID, ok := middleware.OwnerID(c)
+	if !ok {
 		writeError(c, http.StatusInternalServerError, "internal_error", "request owner is unavailable")
 		return
 	}
-	page, err := h.service.List(c.Request.Context(), filter)
+	page, err := h.service.List(c.Request.Context(), ownerID, filter)
 	if err != nil {
 		writeServiceError(c, err)
 		return
@@ -96,11 +93,12 @@ func (h *DebtHandler) Get(c *gin.Context) {
 	if !ok {
 		return
 	}
-	if _, ok := middleware.OwnerID(c); !ok {
+	ownerID, ok := middleware.OwnerID(c)
+	if !ok {
 		writeError(c, http.StatusInternalServerError, "internal_error", "request owner is unavailable")
 		return
 	}
-	debt, err := h.service.Get(c.Request.Context(), id)
+	debt, err := h.service.Get(c.Request.Context(), ownerID, id)
 	if err != nil {
 		writeServiceError(c, err)
 		return
@@ -123,11 +121,12 @@ func (h *DebtHandler) Update(c *gin.Context) {
 		writeError(c, http.StatusBadRequest, "invalid_request", "at least one supported field is required")
 		return
 	}
-	if _, ok := middleware.OwnerID(c); !ok {
+	ownerID, ok := middleware.OwnerID(c)
+	if !ok {
 		writeError(c, http.StatusInternalServerError, "internal_error", "request owner is unavailable")
 		return
 	}
-	updated, err := h.service.Update(c.Request.Context(), id, request.Patch())
+	updated, err := h.service.Update(c.Request.Context(), ownerID, id, request.Patch())
 	if err != nil {	
 		writeServiceError(c, err)
 		return
@@ -140,11 +139,12 @@ func (h *DebtHandler) Delete(c *gin.Context) {
 	if !ok {
 		return
 	}
-	if _, ok := middleware.OwnerID(c); !ok {
+	ownerID, ok := middleware.OwnerID(c)
+	if !ok {
 		writeError(c, http.StatusInternalServerError, "internal_error", "request owner is unavailable")
 		return
 	}
-	if err := h.service.Delete(c.Request.Context(), id); err != nil {
+	if err := h.service.Delete(c.Request.Context(), ownerID, id); err != nil {
 		writeServiceError(c, err)
 		return
 	}
