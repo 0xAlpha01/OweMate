@@ -1,7 +1,6 @@
 package models
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"go.mongodb.org/mongo-driver/v2/bson/primitive"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 type DebtDirection string
@@ -111,7 +110,7 @@ func isDigits(value string) bool {
 }
 
 type Debt struct {
-	ID                primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	ID                bson.ObjectID     `json:"id" bson:"_id,omitempty"`
 	OwnerID           string             `json:"owner_id" bson:"owner_id"`
 	PersonName        string             `json:"person_name" bson:"person_name"`
 	Direction         DebtDirection      `json:"direction" bson:"direction"`
@@ -208,5 +207,3 @@ func (r UpdateDebtRequest) Patch() DebtPatch {
 		OriginalAmount: r.OriginalAmount, DueDate: r.DueDate, Notes: r.Notes,
 	}
 }
-
-var _ = bytes.TrimSpace
