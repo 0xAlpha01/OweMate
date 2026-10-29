@@ -7,10 +7,10 @@ import (
 )
 
 type Config struct {
-	MongoURI          string
-	MongoDatabase     string
+	MongoURI           string
+	MongoDatabase      string
 	DevelopmentOwnerID string
-	Port              string
+	Port               string
 }
 
 func Load() (Config, error) {
@@ -23,7 +23,7 @@ func Load() (Config, error) {
 		return Config{}, errors.New("DEVELOPMENT_OWNER_ID is required until authentication is implemented")
 	}
 
-	port := strings.TrimSpace(os.Getenv("PORT"))	
+	port := strings.TrimSpace(os.Getenv("PORT"))
 	if port == "" {
 		port = "8080"
 	}
