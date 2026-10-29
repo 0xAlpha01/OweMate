@@ -26,10 +26,10 @@ func TestBuildMongoFilterAlwaysScopesOwnerAndAppliesFilters(t *testing.T) {
 		t.Fatalf("query missing owner/direction: %#v", query)
 	}
 	conditions, ok := query["$and"].(bson.A)
-	if !ok || len(conditions) != 2 {
-		t.Fatalf("overdue conditions = %#v, want outstanding and due date clauses", query["$and"])
+	if !ok || len(conditions) != 3 {
+		t.Fatalf("overdue conditions = %#v, want status, outstanding, and due date clauses", query["$and"])
 	}
-	dateClause, ok := conditions[1].(bson.M)
+	dateClause, ok := conditions[2].(bson.M)
 	if !ok {
 		t.Fatalf("overdue date clause type = %T, want bson.M", conditions[1])
 	}
@@ -44,8 +44,23 @@ func TestBuildMongoFilterForPaidStatus(t *testing.T) {
 	if query["owner_id"] != "owner-2" {
 		t.Errorf("owner_id = %#v, want owner-2", query["owner_id"])
 	}
-	paid, ok := query["outstanding_amount_kobo"].(bson.M)
+	conditions, ok := query["$and"].(bson.A)
+	if !ok || len(conditions) != 2 {
+		t.Fatalf("paid conditions = %#v, want status and outstanding clauses", query["$and"])
+	}
+	paidClause, ok := conditions[1].(bson.M)
+	if !ok {
+		t.Fatalf("paid clause type = %T, want bson.M", conditions[1])
+	}
+	paid, ok := paidClause["outstanding_amount_kobo"].(bson.M)
 	if !ok || paid["$lte"] != 0 {
-		t.Errorf("paid filter = %#v, want outstanding_amount_kobo <= 0", query["outstanding_amount_kobo"])
+		t.Errorf("paid filter = %#v, want outstanding_amount_kobo <= 0", paidClause)
+	}
+}
+
+func TestNormalizePaginationCapsPageWithoutOverflow(t *testing.T) {
+	page, limit := NormalizePagination(math.MaxInt64, MaximumPageSize)
+	if page > math.MaxInt64/limit+1 {
+		t.Errorf("normalized page = %d, overflow ceiling = %d", page, math.MaxInt64/limit+1)
 	}
 }

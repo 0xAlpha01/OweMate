@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"errors"
+	"math"
 	"time"
 
 	"github.com/0xAlpha01/OweMate/backend/internal/models"
@@ -135,6 +136,10 @@ func NormalizePagination(page, limit int64) (int64, int64) {
 	if limit > MaximumPageSize {
 		limit = MaximumPageSize
 	}
+	maximumPage := math.MaxInt64/limit + 1
+	if page > maximumPage {
+		page = maximumPage
+	}
 	return page, limit
 }
 
@@ -154,16 +159,28 @@ func BuildMongoFilter(ownerID string, filter models.DebtFilter, now time.Time) b
 		bson.M{"due_date": bson.M{"$gte": startOfToday}},
 	}}
 	positiveOutstanding := bson.M{"outstanding_amount_kobo": bson.M{"$gt": 0}}
+	nonPaidStatuses := bson.M{"status": bson.M{"$in": bson.A{
+		models.StatusPending, models.StatusPartiallyPaid, models.StatusOverdue,
+	}}}
 
 	switch filter.Status {
 	case models.StatusPending:
-		query["$and"] = bson.A{bson.M{"amount_paid_kobo": 0}, positiveOutstanding, notOverdue}
+		query["$and"] = bson.A{
+			bson.M{"status": bson.M{"$in": bson.A{models.StatusPending, models.StatusOverdue}}},
+			bson.M{"amount_paid_kobo": 0}, positiveOutstanding, notOverdue,
+		}
 	case models.StatusPartiallyPaid:
-		query["$and"] = bson.A{bson.M{"amount_paid_kobo": bson.M{"$gt": 0}}, positiveOutstanding, notOverdue}
+		query["$and"] = bson.A{
+			bson.M{"status": bson.M{"$in": bson.A{models.StatusPartiallyPaid, models.StatusOverdue}}},
+			bson.M{"amount_paid_kobo": bson.M{"$gt": 0}}, positiveOutstanding, notOverdue,
+		}
 	case models.StatusPaid:
-		query["outstanding_amount_kobo"] = bson.M{"$lte": 0}
+		query["$and"] = bson.A{
+			bson.M{"status": models.StatusPaid},
+			bson.M{"outstanding_amount_kobo": bson.M{"$lte": 0}},
+		}
 	case models.StatusOverdue:
-		query["$and"] = bson.A{positiveOutstanding, bson.M{"due_date": bson.M{"$lt": startOfToday}}}
+		query["$and"] = bson.A{nonPaidStatuses, positiveOutstanding, bson.M{"due_date": bson.M{"$lt": startOfToday}}}
 	}
 	return query
 }
