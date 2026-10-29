@@ -33,7 +33,7 @@ export function DebtTable({ debts, onMarkRepaid, onDelete }: DebtTableProps) {
             <th>AMOUNT</th>
             <th>DUE DATE</th>
             <th>STATUS</th>
-             <th aria-label="Actions" />
+            <th aria-label="Actions" />
           </tr>
         </thead>
         <tbody>
