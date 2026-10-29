@@ -5,7 +5,7 @@ OweMate is an AI-powered WhatsApp debt management assistant for individuals and 
 ## Prerequisites
 
 - Node.js 20.19+ or 22.12+, with npm
-- Go 1.23 or newer
+- Go 1.25 or newer
 - MongoDB running locally or available through MongoDB Atlas
 
 ## Frontend
