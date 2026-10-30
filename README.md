@@ -45,12 +45,12 @@ Example create request (amounts are JSON naira values with at most two decimal p
 
 ```json
 {
-	"person_name": "Chinedu Okafor",
-	"direction": "owed_to_me",
-	"description": "Stock purchase",
-	"original_amount": 12500.50,
-	"due_date": "2026-11-15",
-	"notes": "Pay by bank transfer"
+  "person_name": "Chinedu Okafor",
+  "direction": "owed_to_me",
+  "description": "Stock purchase",
+  "original_amount": 12500.5,
+  "due_date": "2026-11-15",
+  "notes": "Pay by bank transfer"
 }
 ```
 
