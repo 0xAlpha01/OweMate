@@ -37,17 +37,16 @@ func run() error {
 	}
 
 	startupCtx, cancelStartup := context.WithTimeout(context.Background(), 10*time.Second)
+	debtRepository := repositories.NewMongoDebtRepository(client.Database())
 	if err := client.Ping(startupCtx); err != nil {
 		log.Printf("MongoDB startup check failed; API will start with readiness unavailable")
 	} else {
-		debtRepository := repositories.NewMongoDebtRepository(client.Database())
 		if err := debtRepository.EnsureIndexes(startupCtx); err != nil {
 			log.Printf("MongoDB index setup failed; database-backed requests may be unavailable")
 		}
 	}
 	cancelStartup()
 
-	debtRepository := repositories.NewMongoDebtRepository(client.Database())
 	router := routes.NewRouter(client)
 	routes.RegisterDebtRoutes(router, handlers.NewDebtHandler(services.NewDebtService(debtRepository)), cfg.DevelopmentOwnerID)
 
