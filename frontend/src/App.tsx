@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import LandingPage from "./LandingPage";
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -101,7 +102,7 @@ const summaryConfig = [
   },
 ] as const;
 
-function App() {
+function DashboardApp() {
   const [debts, setDebts] = useState<Debt[]>(mockDebts);
   const [repayments, setRepayments] = useState<Repayment[]>(mockRepayments);
   const [activeView, setActiveView] = useState<ViewKey>("Overview");
@@ -165,7 +166,6 @@ function App() {
       createdAt: new Date().toISOString(),
     };
     setDebts((current) => [newDebt, ...current]);
-    setIsAddModalOpen(false);
     showToast("Debt added to your records");
   }
 
@@ -424,6 +424,28 @@ function matchesSearch(debt: Debt, query: string) {
       value.toLocaleLowerCase().includes(query),
     )
   );
+}
+
+function App() {
+  const path = window.location.pathname.replace(/\/+$/, "") || "/";
+  if (path === "/dashboard") return <DashboardApp />;
+  if (path === "/login") {
+    return (
+      <main className="route-placeholder">
+        <div className="route-placeholder-card">
+          <span className="route-placeholder-icon"><Wallet size={22} /></span>
+          <p className="eyebrow">OWEMATE</p>
+          <h1>Sign-in isn’t available yet.</h1>
+          <p>There’s no account system connected in this preview. You can explore the local demo without signing in.</p>
+          <div className="route-placeholder-actions">
+            <a className="button button-primary" href="/demo#interactive-demo">Try the demo</a>
+            <a className="route-home-link" href="/">Back to OweMate</a>
+          </div>
+        </div>
+      </main>
+    );
+  }
+  return <LandingPage />;
 }
 
 export default App;
