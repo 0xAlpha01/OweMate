@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { X } from "lucide-react";
 import type { DebtDirection, DebtDraft } from "../types";
 
@@ -8,6 +8,8 @@ interface AddDebtModalProps {
 }
 
 export function AddDebtModal({ onClose, onSubmit }: AddDebtModalProps) {
+  const [isClosing, setIsClosing] = useState(false);
+  const closeTimeout = useRef<number | null>(null);
   const [personName, setPersonName] = useState("");
   const [direction, setDirection] = useState<DebtDirection>("owed_to_me");
   const [amount, setAmount] = useState("");
@@ -15,6 +17,21 @@ export function AddDebtModal({ onClose, onSubmit }: AddDebtModalProps) {
   const [dueDate, setDueDate] = useState("");
   const [notes, setNotes] = useState("");
   const [amountError, setAmountError] = useState("");
+
+  useEffect(
+    () => () => {
+      if (closeTimeout.current !== null) {
+        window.clearTimeout(closeTimeout.current);
+      }
+    },
+    [],
+  );
+
+  function requestClose() {
+    if (isClosing) return;
+    setIsClosing(true);
+    closeTimeout.current = window.setTimeout(onClose, 180);
+  }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -31,17 +48,18 @@ export function AddDebtModal({ onClose, onSubmit }: AddDebtModalProps) {
       dueDate,
       notes: notes.trim() || undefined,
     });
+    requestClose();
   }
 
   return (
     <div
-      className="modal-backdrop"
+      className={`modal-backdrop ${isClosing ? "closing" : ""}`}
       onMouseDown={(event) => {
-        if (event.target === event.currentTarget) onClose();
+        if (event.target === event.currentTarget) requestClose();
       }}
     >
       <section
-        className="add-modal"
+        className={`add-modal ${isClosing ? "closing" : ""}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="add-debt-title"
@@ -55,7 +73,7 @@ export function AddDebtModal({ onClose, onSubmit }: AddDebtModalProps) {
           <button
             className="icon-button modal-close"
             aria-label="Close dialog"
-            onClick={onClose}
+            onClick={requestClose}
           >
             <X size={19} />
           </button>
@@ -169,7 +187,7 @@ export function AddDebtModal({ onClose, onSubmit }: AddDebtModalProps) {
             <button
               type="button"
               className="secondary-button"
-              onClick={onClose}
+              onClick={requestClose}
             >
               Cancel
             </button>

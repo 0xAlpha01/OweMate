@@ -166,7 +166,6 @@ function DashboardApp() {
       createdAt: new Date().toISOString(),
     };
     setDebts((current) => [newDebt, ...current]);
-    setIsAddModalOpen(false);
     showToast("Debt added to your records");
   }
 
