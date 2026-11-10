@@ -17,7 +17,7 @@
   align-items: center;
   gap: 10px;
   padding: 0 9px;
-  color: #143b39;
+  color: #17152b;
   font-size: 21px;
   font-weight: 750;
 }
@@ -27,8 +27,8 @@
   height: 34px;
   place-items: center;
   border-radius: 10px;
-  background: #dff4ef;
-  color: #127e70;
+  background: #f1ebff;
+  color: #7047d7;
 }
 .workspace-switcher {
   display: flex;
@@ -45,8 +45,8 @@
   height: 34px;
   place-items: center;
   border-radius: 7px;
-  background: #e6f4f1;
-  color: #167b6e;
+  background: #f1ebff;
+  color: #7047d7;
   font-weight: 700;
 }
 .workspace-copy,
@@ -107,11 +107,11 @@
 }
 .nav-item:hover {
   background: #f3f8f6;
-  color: #166c61;
+  color: #5932c4;
 }
 .nav-item.active {
-  background: #e9f6f3;
-  color: #167b6d;
+  background: #f1ebff;
+  color: #7047d7;
   font-weight: 650;
 }
 .nav-count {
@@ -138,7 +138,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #177d70;
+  color: #7047d7;
 }
 .help-card strong {
   color: #32423f;
@@ -153,7 +153,7 @@
   border: 0;
   background: transparent;
   padding: 0;
-  color: #187b6e;
+  color: #7047d7;
   font-size: 10px;
   font-weight: 700;
 }
@@ -333,12 +333,12 @@
     transform 0.15s;
 }
 .primary-button {
-  background: #147d70;
+  background: #7047d7;
   color: white;
   box-shadow: 0 1px 2px #0e62561c;
 }
 .primary-button:hover {
-  background: #106b60;
+  background: #5932c4;
 }
 .primary-button:active {
   transform: translateY(1px);
@@ -373,8 +373,8 @@
   border-radius: 8px;
 }
 .summary-icon.teal {
-  background: #e5f5f1;
-  color: #198575;
+  background: #f1ebff;
+  color: #7047d7;
 }
 .summary-icon.blue {
   background: #eaf1fa;
@@ -449,13 +449,13 @@
   border: 0;
   background: transparent;
   padding: 6px 0 6px 8px;
-  color: #167c70;
+  color: #7047d7;
   font-size: 10px;
   font-weight: 650;
   white-space: nowrap;
 }
 .text-button:hover {
-  color: #0c5d53;
+  color: #5932c4;
 }
 .table-scroll {
   width: 100%;
@@ -598,7 +598,7 @@
 }
 .row-action:hover {
   background: #edf7f4;
-  color: #167c70;
+  color: #7047d7;
 }
 .row-action.delete-action:hover {
   background: #fff0ec;
@@ -666,10 +666,10 @@
   transition: width 0.25s ease;
 }
 .bar-incoming {
-  background: #278f80;
+  background: #7047d7;
 }
 .bar-outgoing {
-  background: #9fcfc7;
+  background: #c3b0f2;
 }
 .breakdown-legend {
   display: grid;
@@ -695,10 +695,10 @@
   border-radius: 50%;
 }
 .incoming-dot {
-  background: #278f80;
+  background: #7047d7;
 }
 .outgoing-dot {
-  background: #9fcfc7;
+  background: #c3b0f2;
 }
 .reminder-list {
   display: grid;
@@ -866,7 +866,7 @@
   place-items: center;
   border-radius: 8px;
   background: #e7f5f1;
-  color: #167b6d;
+  color: #7047d7;
 }
 .settings-panel h2 {
   margin: 0 0 5px;
@@ -1030,7 +1030,7 @@
   width: 13px;
   min-height: 13px;
   height: 13px;
-  accent-color: #168071;
+  accent-color: #7047d7;
 }
 .form-row {
   display: grid;
