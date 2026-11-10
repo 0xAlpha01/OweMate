@@ -40,6 +40,7 @@ const navigation = [
   { label: "Demo", id: "interactive-demo" },
   { label: "Pricing", id: "pricing" },
 ];
+const copyrightYear = new Date().getFullYear();
 
 const starterDebts: DemoDebt[] = [
   { id: 1, name: "Chinedu Okafor", description: "Shared trip expenses", amount: 85000, direction: "owed_to_me", dueDate: "2026-11-18" },
@@ -122,8 +123,8 @@ function AnimatedAmount({ value }: { value: number }) {
     if (!isVisible) return;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reducedMotion) {
-      setCount(value);
-      return;
+      const frame = requestAnimationFrame(() => setCount(value));
+      return () => cancelAnimationFrame(frame);
     }
 
     let frame = 0;
@@ -524,7 +525,7 @@ function LandingPage() {
             <div className="footer-brand-block"><a className="landing-brand" href="/"><span className="brand-icon"><HandCoins size={19} /></span><span>Owe<span className="brand-accent">Mate</span></span></a><p>More clarity for the money you share.</p></div>
             <div className="footer-links"><div><b>Explore</b><a href="#features">Features</a><a href="#how-it-works">How it works</a><a href="#pricing">Pricing</a></div><div><b>Product</b><a href="/demo#interactive-demo">Interactive demo</a><a href="/dashboard">Dashboard preview</a><a href="/login">Log in</a></div></div>
           </div>
-          <div className="footer-bottom"><span>© {new Date().getFullYear()} OweMate. All rights reserved.</span><span>Demo data is local to this browser.</span></div>
+          <div className="footer-bottom"><span>© {copyrightYear} OweMate. All rights reserved.</span><span>Demo data is local to this browser.</span></div>
         </div>
       </footer>
       {toast && <div role="status" className="demo-toast"><Check size={16} />{toast}</div>}
