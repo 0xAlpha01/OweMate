@@ -145,8 +145,9 @@ function AnimatedAmount({ value }: { value: number }) {
 }
 
 function LandingPage() {
-  const [activeSection, setActiveSection] = useState("features");
+  const [activeSection, setActiveSection] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [debts, setDebts] = useState(starterDebts);
   const [search, setSearch] = useState("");
@@ -159,6 +160,25 @@ function LandingPage() {
   const [newDebtAmount, setNewDebtAmount] = useState("");
   const [newDebtDirection, setNewDebtDirection] = useState<DemoDirection>("owed_to_me");
   const [newDebtDueDate, setNewDebtDueDate] = useState("");
+
+  useEffect(() => {
+    function updateScrollState() {
+      setIsScrolled(window.scrollY > 8);
+    }
+
+    updateScrollState();
+    window.addEventListener("scroll", updateScrollState, { passive: true });
+    return () => window.removeEventListener("scroll", updateScrollState);
+  }, []);
+
+  useEffect(() => {
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setMobileMenuOpen(false);
+    }
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, []);
 
   useEffect(() => {
     const sectionIds = navigation.map(({ id }) => id);
@@ -183,7 +203,10 @@ function LandingPage() {
   useEffect(() => {
     if (!window.location.hash) return;
     const timer = window.setTimeout(() => {
-      document.querySelector(window.location.hash)?.scrollIntoView({ behavior: "smooth" });
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.querySelector(window.location.hash)?.scrollIntoView({
+        behavior: reducedMotion ? "auto" : "smooth",
+      });
     }, 100);
     return () => window.clearTimeout(timer);
   }, []);
@@ -249,7 +272,7 @@ function LandingPage() {
 
   return (
     <div className="landing-page">
-      <header className="landing-nav">
+      <header className={`landing-nav ${isScrolled ? "nav-scrolled" : ""}`}>
         <div className="nav-inner">
           <a className="landing-brand" href="/" aria-label="OweMate home">
             <span className="brand-icon"><HandCoins size={19} strokeWidth={2.2} /></span>
@@ -384,10 +407,10 @@ function LandingPage() {
               <p>Simple tools to help you keep track without making things complicated.</p>
             </Reveal>
             <div className="feature-grid">
-              <Reveal className="feature-reveal" delay={0}><article className="feature-card"><div className="feature-icon icon-purple"><ClipboardList size={21} /></div><h3>Track debts</h3><p>Keep a clear record of who owes what, what it was for, and when it’s due.</p><span className="feature-link">Every detail, in one place <ArrowRight size={14} /></span><div className="feature-decoration debt-decoration"><span>₦ 48,000</span><i /><i /><i /></div></article></Reveal>
-              <Reveal className="feature-reveal" delay={90}><article className="feature-card"><div className="feature-icon icon-peach"><Bell size={21} /></div><h3>Thoughtful reminders</h3><p>See due dates coming up and stay on top of follow-ups at your own pace.</p><span className="feature-link">Stay in the know <ArrowRight size={14} /></span><div className="feature-decoration reminder-decoration"><Bell size={15} /><span>Due in 2 days</span><i /></div></article></Reveal>
-              <Reveal className="feature-reveal" delay={180}><article className="feature-card"><div className="feature-icon icon-blue"><TrendingUp size={21} /></div><h3>Clear insights</h3><p>Understand what’s owed to you and what you owe with a useful overview.</p><span className="feature-link">See the bigger picture <ArrowRight size={14} /></span><div className="feature-decoration insight-decoration"><span>+12.8%</span><div><i /><i /><i /><i /><i /><i /></div></div></article></Reveal>
-              <Reveal className="feature-reveal" delay={270}><article className="feature-card feature-card-ai"><div className="feature-icon icon-lilac"><Sparkles size={21} /></div><span className="coming-soon">COMING SOON</span><h3>AI assistant</h3><p>A smarter way to understand your money habits is on the horizon.</p><span className="feature-link">Not available yet <ArrowRight size={14} /></span><div className="feature-decoration ai-decoration"><Sparkles size={26} /><i /><i /></div></article></Reveal>
+              <Reveal className="feature-reveal" delay={0}><article className="feature-card"><div className="feature-icon icon-purple"><ClipboardList size={21} /></div><h3>Track debts</h3><p>Keep a clear record of who owes what, what it was for, and when it’s due.</p><a className="feature-link" href="#interactive-demo">Every detail, in one place <ArrowRight size={14} /></a><div className="feature-decoration debt-decoration"><span>₦ 48,000</span><i /><i /><i /></div></article></Reveal>
+              <Reveal className="feature-reveal" delay={90}><article className="feature-card"><div className="feature-icon icon-peach"><Bell size={21} /></div><h3>Thoughtful reminders</h3><p>See due dates coming up and stay on top of follow-ups at your own pace.</p><a className="feature-link" href="#interactive-demo">Stay in the know <ArrowRight size={14} /></a><div className="feature-decoration reminder-decoration"><Bell size={15} /><span>Due in 2 days</span><i /></div></article></Reveal>
+              <Reveal className="feature-reveal" delay={180}><article className="feature-card"><div className="feature-icon icon-blue"><TrendingUp size={21} /></div><h3>Clear insights</h3><p>Understand what’s owed to you and what you owe with a useful overview.</p><a className="feature-link" href="#interactive-demo">See the bigger picture <ArrowRight size={14} /></a><div className="feature-decoration insight-decoration"><span>+12.8%</span><div><i /><i /><i /><i /><i /><i /></div></div></article></Reveal>
+              <Reveal className="feature-reveal" delay={270}><article className="feature-card feature-card-ai"><div className="feature-icon icon-lilac"><Sparkles size={21} /></div><span className="coming-soon">COMING SOON</span><h3>AI assistant</h3><p>A smarter way to understand your money habits is on the horizon.</p><span className="feature-link">Coming soon</span><div className="feature-decoration ai-decoration"><Sparkles size={26} /><i /><i /></div></article></Reveal>
             </div>
           </div>
         </section>
